@@ -18,7 +18,8 @@ module.exports = async (client: Client, env: ENV) => {
                 const channel = await newState.guild.channels.create({
                     name: `${newState.member?.user.username}`,
                     type: 2,
-                    parent: env.createVoiceCategoryId
+                    parent: env.createVoiceCategoryId,
+                    userLimit: 5
                 });
 
                 if (newState.member && channel instanceof VoiceChannel) {
