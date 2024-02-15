@@ -9,10 +9,11 @@ module.exports = client;
 
 // Bot Loading \\
 
+import { ActivityType } from 'discord.js';
 client.once('ready', () => {
     client.user.setStatus('dnd');
     client.user.setUsername('Pitko Gambini');
-    client.user.setActivity('Praim gi na Grove Street!');
+    client.user.setActivity('Competing on Grove Street', { type: ActivityType.Custom });
 });
 
 // Modules Loading \\
