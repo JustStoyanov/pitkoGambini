@@ -1,11 +1,11 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildVoiceStates
     ]
 });
-module.exports = client;
+module.exports = client, client.commands = new Collection();
 
 const config = require('../config.json');
 
