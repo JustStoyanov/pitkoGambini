@@ -1,0 +1,29 @@
+{
+    "user": {
+        "status": "dnd",
+        "username": "Pitko Gambini",
+        "activity": "Competing on Grove Street"
+    },
+
+    "mongo": {
+        "database": "pitkoGambini",
+        "collection": "channelsData"
+    },
+
+    "createVoice": {
+        "categoryIds": [
+            {
+                "id": "1207698127549632523",
+                "userLimit": 5
+            },
+            {
+                "id": "1207739820554715258",
+                "userLimit": 2
+            }
+        ],
+        "channelIds": [
+            "1207635841145376788",
+            "1207739885646123078"
+        ]
+    }
+}

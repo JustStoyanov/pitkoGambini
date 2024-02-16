@@ -7,26 +7,27 @@ const client = new Client({
 });
 module.exports = client;
 
+const config = require('../config.json');
+
 // Bot Loading \\
 
 import { ActivityType } from 'discord.js';
 client.once('ready', () => {
-    client.user.setStatus('dnd');
-    client.user.setUsername('Pitko Gambini');
-    client.user.setActivity('Competing on Grove Street', { type: ActivityType.Custom });
+    client.user.setStatus(config.status);
+    client.user.setUsername(config.username);
+    client.user.setActivity(config.activity, { type: ActivityType.Custom });
 });
 
 // Modules Loading \\
 
-require('dotenv').config();
-const env = process.env, asciiTable = require('ascii-table'), fs = require('fs'), colors = require('colors');
 
+const asciiTable = require('ascii-table'), fs = require('fs'), colors = require('colors');
 const loadModules = () => {
     const modulesTable = new asciiTable().setHeading('Module', 'Status');
     fs.readdirSync('./dist/modules').forEach((module: string) => {
         if (module.endsWith('.ts') || module.endsWith('.js')) {
             modulesTable.addRow(module, `✅ ${colors.green('Success')}`);
-            require(`./modules/${module}`)(client);
+            require(`./modules/${module}`)(client, config);
         } else {
             modulesTable.addRow(module, `❌ ${colors.red('Failed')}`);
         };
@@ -35,4 +36,5 @@ const loadModules = () => {
 };
 loadModules();
 
-client.login(env.token);
+require('dotenv').config();
+client.login(process.env.token);

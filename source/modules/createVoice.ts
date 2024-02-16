@@ -1,23 +1,10 @@
+require('dotenv').config();
+import { MongoClient } from 'mongodb';
 import { Client, VoiceState, VoiceChannel } from 'discord.js';
-
-const createVoiceCategoryIds = [
-    {
-        id: '1207698127549632523',
-        userLimit: 5
-    },
-    {
-        id: '1207739820554715258',
-        userLimit: 2
-    }
-];
-const createVoiceChannelIds = ['1207635841145376788', '1207739885646123078'];
 
 // Mongo DB Handling \\
 
-import { MongoClient } from 'mongodb';
-require('dotenv').config();
 const mongoClient = new MongoClient(process.env.mongoURI as string);
-
 const connectToMongoDB = async () => {
     try {
         await mongoClient.connect();
@@ -25,30 +12,32 @@ const connectToMongoDB = async () => {
         console.error('Could not connect to MongoDB:', error);
     }
 };
-  
+
+let database = '', collection = '';
 const addCreatedChannel = async (channelId: string) => {
-    const collection = mongoClient.db('pitkoGambini').collection('channelsData');
+    const collection = mongoClient.db(database).collection('channelsData');
     await collection.insertOne({ channelId });
 };
   
 const removeCreatedChannel = async (channelId: string) => {
-    const collection = mongoClient.db('pitkoGambini').collection('channelsData');
+    const collection = mongoClient.db(database).collection('channelsData');
     await collection.deleteOne({ channelId });
 };
   
 const getCreatedChannels = async () => {
-    const collection = mongoClient.db('pitkoGambini').collection('channelsData');
+    const collection = mongoClient.db(database).collection('channelsData');
     const channels = await collection.find({}).toArray();
     return channels.map(doc => doc.channelId);
 };
 
 // Main Function \\
 
-module.exports = async (client: Client) => {
+module.exports = async (client: Client, config: any) => {
+    database = config.mongo.database, collection = config.mongo.collection;
     await connectToMongoDB();
-    
     const guildId = process.env.guildId as string;
     const createdChannels: string[] = await getCreatedChannels();
+    const createVoiceCategoryIds = config.createVoice.categoryIds, createVoiceChannelIds = config.createVoice.channelIds;
     client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
         for (let i = 0; i < createVoiceChannelIds.length; i++) {
             if (newState.channelId === createVoiceChannelIds[i] && newState.guild.id === guildId) {
