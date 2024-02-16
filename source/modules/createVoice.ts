@@ -1,12 +1,5 @@
 import { Client, VoiceState, VoiceChannel } from 'discord.js';
 
-interface ENV {
-    token: string;
-    guildId: string;
-};
-
-const fs = require('fs');
-
 const createVoiceCategoryIds = [
     {
         id: '1207698127549632523',
@@ -19,9 +12,43 @@ const createVoiceCategoryIds = [
 ];
 const createVoiceChannelIds = ['1207635841145376788', '1207739885646123078'];
 
-module.exports = async (client: Client, env: ENV) => {
-    const guildId = env.guildId;
-    const createdChannels: string[] = JSON.parse(fs.readFileSync('./source/modules/createdChannels.json'))
+// Mongo DB Handling \\
+
+import { MongoClient } from 'mongodb';
+require('dotenv').config();
+const mongoClient = new MongoClient(process.env.mongoURI as string);
+
+const connectToMongoDB = async () => {
+    try {
+        await mongoClient.connect();
+    } catch (error) {
+        console.error('Could not connect to MongoDB:', error);
+    }
+};
+  
+const addCreatedChannel = async (channelId: string) => {
+    const collection = mongoClient.db('pitkoGambini').collection('channelsData');
+    await collection.insertOne({ channelId });
+};
+  
+const removeCreatedChannel = async (channelId: string) => {
+    const collection = mongoClient.db('pitkoGambini').collection('channelsData');
+    await collection.deleteOne({ channelId });
+};
+  
+const getCreatedChannels = async () => {
+    const collection = mongoClient.db('pitkoGambini').collection('channelsData');
+    const channels = await collection.find({}).toArray();
+    return channels.map(doc => doc.channelId);
+};
+
+// Main Function \\
+
+module.exports = async (client: Client) => {
+    await connectToMongoDB();
+    
+    const guildId = process.env.guildId as string;
+    const createdChannels: string[] = await getCreatedChannels();
     client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
         for (let i = 0; i < createVoiceChannelIds.length; i++) {
             if (newState.channelId === createVoiceChannelIds[i] && newState.guild.id === guildId) {
@@ -38,7 +65,7 @@ module.exports = async (client: Client, env: ENV) => {
                     }
                     createdChannels.push(channel.id);
 
-                    fs.writeFileSync('./source/modules/createdChannels.json', JSON.stringify(createdChannels));
+                    await addCreatedChannel(channel.id);
                 } catch (error) {
                     console.error('Failed to create voice channel or move the member:', error);
                 }
@@ -52,7 +79,7 @@ module.exports = async (client: Client, env: ENV) => {
                     try {
                         await channel.delete();
                         createdChannels.splice(i, 1);
-                        fs.writeFileSync('./source/modules/createdChannels.json', JSON.stringify(createdChannels));
+                        await removeCreatedChannel(channel.id);
                     } catch (error) {
                         console.error('Failed to delete voice channel:', error);
                     }
@@ -72,10 +99,9 @@ module.exports = async (client: Client, env: ENV) => {
             const channel = guild.channels.cache.get(createdChannels[i]) as VoiceChannel;
             if (channel && channel.members.size === 0) {
                 await channel.delete();
-                createdChannels.splice(i, 1);  // Safe to remove while iterating backwards
+                createdChannels.splice(i, 1);
+                await removeCreatedChannel(channel.id);
             }
-        }        
-
-        fs.writeFileSync('./source/modules/createdChannels.json', JSON.stringify(createdChannels));
+        }
     });
 };

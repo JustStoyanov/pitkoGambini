@@ -26,7 +26,7 @@ const loadModules = () => {
     fs.readdirSync('./dist/modules').forEach((module: string) => {
         if (module.endsWith('.ts') || module.endsWith('.js')) {
             modulesTable.addRow(module, `✅ ${colors.green('Success')}`);
-            require(`./modules/${module}`)(client, env);
+            require(`./modules/${module}`)(client);
         } else {
             modulesTable.addRow(module, `❌ ${colors.red('Failed')}`);
         };
