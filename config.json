@@ -1,10 +1,4 @@
 {
-    "user": {
-        "status": "dnd",
-        "username": "Pitko Gambini",
-        "activity": "Competing on Grove Street"
-    },
-
     "mongo": {
         "database": "pitkoGambini",
         "collection": "channelsData"

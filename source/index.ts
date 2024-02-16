@@ -13,13 +13,12 @@ const config = require('../config.json');
 
 import { ActivityType } from 'discord.js';
 client.once('ready', () => {
-    client.user.setStatus(config.status);
-    client.user.setUsername(config.username);
-    client.user.setActivity(config.activity, { type: ActivityType.Custom });
+    client.user.setStatus('dnd');
+    client.user.setUsername('Pitko Gambini');
+    client.user.setActivity('Competing on Grove Street', { type: ActivityType.Custom });
 });
 
 // Modules Loading \\
-
 
 const asciiTable = require('ascii-table'), fs = require('fs'), colors = require('colors');
 const loadModules = () => {
