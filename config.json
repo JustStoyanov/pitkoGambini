@@ -1,4 +1,7 @@
 {
+    "guildId": "1117819954729861211",
+    "clientId": "1207627179748229141",
+
     "mongo": {
         "database": "pitkoGambini",
         "collection": "channelsData"
@@ -15,6 +18,7 @@
                 "userLimit": 2
             }
         ],
+
         "channelIds": [
             "1207635841145376788",
             "1207739885646123078"

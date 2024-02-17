@@ -14,7 +14,7 @@ interface CustomClient extends Client {
     commandName: string;
 }
 
-module.exports = async (client: CustomClient) => {
+module.exports = async (client: CustomClient, config: any) => {
     // Commands Loading \\
 
     const commands: string[] = [], commandsAscii = new asciiTable().setHeading('Command', 'Load Status');
@@ -35,7 +35,7 @@ module.exports = async (client: CustomClient) => {
     (async () => {
         try {
             await rest.put(
-                Routes.applicationGuildCommands(process.env.clientId, process.env.guildId),
+                Routes.applicationGuildCommands(config.clientId, config.guildId),
                 { body: commands },
             );
         } catch (error) {

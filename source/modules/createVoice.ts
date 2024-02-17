@@ -35,7 +35,7 @@ const getCreatedChannels = async () => {
 module.exports = async (client: Client, config: any) => {
     database = config.mongo.database, collection = config.mongo.collection;
     await connectToMongoDB();
-    const guildId = process.env.guildId as string;
+    const guildId = config.guildId as string;
     const createdChannels: string[] = await getCreatedChannels();
     const createVoiceCategoryIds = config.createVoice.categoryIds, createVoiceChannelIds = config.createVoice.channelIds;
     client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
