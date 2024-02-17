@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-import { CommandInteraction, CommandInteractionOptionResolver, Options } from 'discord.js';
+import { CommandInteraction, CommandInteractionOptionResolver } from 'discord.js';
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('sendmessage')
+        .setName('send_message')
         .setDescription('Send a message to a channel!')
         .addStringOption((option: any) =>
             option.setName('message')
