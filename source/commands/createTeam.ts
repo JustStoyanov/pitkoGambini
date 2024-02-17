@@ -24,11 +24,11 @@ module.exports = {
 
             members.forEach((member, index) => {
                 if (index % 2 === 0 && teamOne.length < 5) {
-                    teamOne.push(member.user.username);
+                    teamOne.push(member.user.displayName);
                 } else if (teamTwo.length < 5) {
-                    teamTwo.push(member.user.username);
+                    teamTwo.push(member.user.displayName);
                 } else {
-                    spectators.push(member.user.username);
+                    spectators.push(member.user.displayName);
                 }
             });
 
