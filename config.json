@@ -7,6 +7,11 @@
         "collection": "channelsData"
     },
 
+    "onJoin": {
+        "channelId": "1207623028058488862",
+        "message": "Braat meeee {member}!"
+    },
+
     "createVoice": {
         "categoryIds": [
             {
