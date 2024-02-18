@@ -1,42 +1,19 @@
 require('dotenv').config();
-import { MongoClient } from 'mongodb';
 import { Client, VoiceState, VoiceChannel } from 'discord.js';
-
-// Mongo DB Handling \\
-
-const mongoClient = new MongoClient(process.env.mongoURI as string);
-const connectToMongoDB = async () => {
-    try {
-        await mongoClient.connect();
-    } catch (error) {
-        console.error('Could not connect to MongoDB:', error);
-    }
-};
-
-let database = '', collection = '';
-const addCreatedChannel = async (channelId: string) => {
-    const collection = mongoClient.db(database).collection('channelsData');
-    await collection.insertOne({ channelId });
-};
-  
-const removeCreatedChannel = async (channelId: string) => {
-    const collection = mongoClient.db(database).collection('channelsData');
-    await collection.deleteOne({ channelId });
-};
-  
-const getCreatedChannels = async () => {
-    const collection = mongoClient.db(database).collection('channelsData');
-    const channels = await collection.find({}).toArray();
-    return channels.map(doc => doc.channelId);
-};
 
 // Main Function \\
 
-module.exports = async (client: Client, config: any) => {
-    database = config.mongo.database, collection = config.mongo.collection;
-    await connectToMongoDB();
+interface DBFunctions {
+    connectToMongoDB: () => Promise<void>;
+    getCollectionData: (collectionName: string) => Promise<any>;
+    addCreatedChannel: (collectionName: string, channelId: string) => Promise<void>;
+    removeCreatedChannel: (collectionName: string, channelId: string) => Promise<void>;
+};
+
+
+module.exports = async (client: Client, config: any, db: DBFunctions) => {
     const guildId = config.guildId as string;
-    const createdChannels: string[] = await getCreatedChannels();
+    const createdChannels: string[] = await db.getCollectionData('channelsData');
     const createVoiceCategoryIds = config.createVoice.categoryIds, createVoiceChannelIds = config.createVoice.channelIds;
     client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
         for (let i = 0; i < createVoiceChannelIds.length; i++) {
@@ -54,7 +31,7 @@ module.exports = async (client: Client, config: any) => {
                     }
                     createdChannels.push(channel.id);
 
-                    await addCreatedChannel(channel.id);
+                    await db.addCreatedChannel('channelsData', channel.id);
                 } catch (error) {
                     console.error('Failed to create voice channel or move the member:', error);
                 }
@@ -68,7 +45,7 @@ module.exports = async (client: Client, config: any) => {
                     try {
                         await channel.delete();
                         createdChannels.splice(i, 1);
-                        await removeCreatedChannel(channel.id);
+                        await db.removeCreatedChannel('channelsData', channel.id);
                     } catch (error) {
                         console.error('Failed to delete voice channel:', error);
                     }
@@ -89,7 +66,7 @@ module.exports = async (client: Client, config: any) => {
             if (channel && channel.members.size === 0) {
                 await channel.delete();
                 createdChannels.splice(i, 1);
-                await removeCreatedChannel(channel.id);
+                await db.removeCreatedChannel('channelsData', channel.id);
             }
         }
     });
