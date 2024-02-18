@@ -9,6 +9,7 @@ const client = new Client({
 });
 module.exports = client, client.commands = new Collection();
 
+require('dotenv').config();
 const config = require('../config.json');
 
 // Bot Loading \\
@@ -83,6 +84,4 @@ const loadModules = async () => {
     console.log(modulesTable.toString());
 };
 loadModules();
-
-require('dotenv').config();
 client.login(process.env.token);
