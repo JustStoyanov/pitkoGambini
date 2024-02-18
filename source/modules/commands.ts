@@ -1,4 +1,5 @@
 require('dotenv').config();
+const config = require('../../config.json');
 
 const asciiTable = require('ascii-table'), fs = require('fs'), colors = require('colors');
 const { REST, Routes } = require('discord.js');
@@ -14,7 +15,7 @@ interface CustomClient extends Client {
     commandName: string;
 }
 
-module.exports = async (client: CustomClient, config: any) => {
+module.exports = async (client: CustomClient) => {
     // Commands Loading \\
 
     const commands: string[] = [], commandsAscii = new asciiTable().setHeading('Command', 'Load Status');

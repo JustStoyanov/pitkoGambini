@@ -1,9 +1,11 @@
-import { SlashCommandBuilder, CommandInteraction, CommandInteractionOptionResolver, TextChannel } from 'discord.js';
+import { SlashCommandBuilder, CommandInteraction, CommandInteractionOptionResolver, GuildMemberRoleManager, TextChannel } from 'discord.js';
+const { authorized, config } = require('../modules/functions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('send_message')
         .setDescription('Send a message to a channel!')
+        .setDMPermission(false)
         .addStringOption(option =>
             option.setName('message')
                 .setDescription('The message to send')
@@ -12,6 +14,10 @@ module.exports = {
         if (!interaction.isCommand() || !interaction.guild) {
             return;
         }
+
+        const roles = interaction.member?.roles as GuildMemberRoleManager;
+        if (!authorized(roles)) return;
+
         const options = interaction.options as CommandInteractionOptionResolver;
         if (!(interaction.channel instanceof TextChannel)) {
             await interaction.reply({ content: 'This command can only be used in a guild text channel.', ephemeral: true });

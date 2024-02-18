@@ -2,6 +2,10 @@
     "guildId": "1117819954729861211",
     "clientId": "1207627179748229141",
 
+    "permissionRoles": [
+        "1207628409186947072"
+    ],
+
     "mongo": {
         "database": "pitkoGambini",
         "collection": "channelsData"
@@ -9,7 +13,8 @@
 
     "onJoin": {
         "channelId": "1207623028058488862",
-        "message": "Braat meeee {member}!"
+        "message": "Braat meeee {member}!",
+        "roleId": "1208792866155925514"
     },
 
     "createVoice": {

@@ -1,17 +1,7 @@
-require('dotenv').config();
 import { Client, VoiceState, VoiceChannel } from 'discord.js';
+const { db, config } = require('./functions');
 
-// Main Function \\
-
-interface DBFunctions {
-    connectToMongoDB: () => Promise<void>;
-    getCollectionData: (collectionName: string) => Promise<any>;
-    addCreatedChannel: (collectionName: string, channelId: string) => Promise<void>;
-    removeCreatedChannel: (collectionName: string, channelId: string) => Promise<void>;
-};
-
-
-module.exports = async (client: Client, config: any, db: DBFunctions) => {
+module.exports = async (client: Client) => {
     const guildId = config.guildId as string;
     const createdChannels: string[] = await db.getCollectionData('channelsData');
     const createVoiceCategoryIds = config.createVoice.categoryIds, createVoiceChannelIds = config.createVoice.channelIds;

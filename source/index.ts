@@ -9,65 +9,19 @@ const client = new Client({
 });
 module.exports = client, client.commands = new Collection();
 
-require('dotenv').config();
-const config = require('../config.json');
-
-// Bot Loading \\
-
-import { ActivityType } from 'discord.js';
-client.once('ready', () => {
-    client.user.setStatus('dnd');
-    client.user.setUsername('Pitko Gambini');
-    client.user.setActivity('Competing on Grove Street', { type: ActivityType.Custom });
-});
-
-// Mongo DB Connection \\
-
-import { MongoClient } from 'mongodb';
-
-interface DBFunctions {
-    connectToMongoDB: () => Promise<void>;
-    getCollectionData: (collectionName: string) => Promise<any>;
-    addCreatedChannel: (collectionName: string, channelId: string) => Promise<void>;
-    removeCreatedChannel: (collectionName: string, channelId: string) => Promise<void>;
-};
-
-const mongoClient = new MongoClient(process.env.mongoURI as string), db = {} as DBFunctions;
-
-db.connectToMongoDB = async () => {
-    try {
-        await mongoClient.connect();
-    } catch (error) {
-        console.error('Could not connect to MongoDB:', error);
-    }
-};
-
-const database = config.mongo.database, collection = config.mongo.collection;
-db.getCollectionData = async (collectionName: string) => {
-    const collection = mongoClient.db(database).collection(collectionName);
-    const channels = await collection.find({}).toArray();
-    return channels.map(doc => doc.channelId);
-};
-
-db.addCreatedChannel = async (collectionName: string, channelId: string) => {
-    const collection = mongoClient.db(database).collection(collectionName);
-    await collection.insertOne({ channelId });
-};
-  
-db.removeCreatedChannel = async (collectionName: string, channelId: string) => {
-    const collection = mongoClient.db(database).collection(collectionName);
-    await collection.deleteOne({ channelId });
-};
-
 // Modules Loading \\
 
 const asciiTable = require('ascii-table'), fs = require('fs'), colors = require('colors');
-const loadModules = async () => {
+const { db } = require('./modules/functions');
+
+(async () => {
     const modulesTable = new asciiTable().setHeading('Module', 'Status');
+
     fs.readdirSync('./dist/modules').forEach((module: string) => {
         if (module.endsWith('.ts') || module.endsWith('.js')) {
             modulesTable.addRow(module, `✅ ${colors.green('Success')}`);
-            require(`./modules/${module}`)(client, config, db);
+            const moduleValue = require(`./modules/${module}`);
+            if (typeof moduleValue === 'function') moduleValue(client);
         } else {
             modulesTable.addRow(module, `❌ ${colors.red('Failed')}`);
         };
@@ -82,6 +36,7 @@ const loadModules = async () => {
     };
 
     console.log(modulesTable.toString());
-};
-loadModules();
+})();
+
+require('dotenv').config();
 client.login(process.env.token);

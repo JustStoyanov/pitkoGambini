@@ -8,6 +8,7 @@ interface ExtendedCommandInteraction extends CommandInteraction {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('create_team')
+        .setDMPermission(false)
         .setDescription('Create a team with the people from the voice channel you are in with even players.'),
     async execute(interaction: ExtendedCommandInteraction) {
         const member = interaction.member;
