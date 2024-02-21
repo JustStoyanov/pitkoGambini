@@ -5,11 +5,13 @@ module.exports = (client: Client) => {
     client.once('ready', () => {
         client.user?.setStatus('dnd');
         client.user?.setUsername('Pitko Gambini');
-        while (true) {
-            setTimeout(() => {
-                const status = config.statuses[Math.floor(Math.random() * config.statuses.length)];
-                client.user?.setActivity(status, { type: ActivityType.Custom });
-            }, 1000 * 60 * 60);
-        };
+
+        const initialStatus = config.statuses[Math.floor(Math.random() * config.statuses.length)];
+        client.user?.setActivity(initialStatus, { type: ActivityType.Custom });
+
+        setInterval(() => {
+            const status = config.statuses[Math.floor(Math.random() * config.statuses.length)];
+            client.user?.setActivity(status, { type: ActivityType.Custom });
+        }, 1000 * 60 * 60);
     });
 };
