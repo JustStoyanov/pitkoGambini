@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, CommandInteraction, CommandInteractionOptionResolver, GuildMemberRoleManager, TextChannel } from 'discord.js';
-const { authorized, config } = require('../modules/functions');
+const { authorized } = require('../modules/functions');
 
 module.exports = {
     data: new SlashCommandBuilder()
