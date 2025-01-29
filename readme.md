@@ -1,3 +1,5 @@
 .env template:
 
 token =
+
+mongoURI = 
